@@ -1,3 +1,3 @@
-<template>
+<template setup>
   <div>用户信息页</div>
 </template>
