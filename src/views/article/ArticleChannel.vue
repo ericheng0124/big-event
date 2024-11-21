@@ -1,3 +1,9 @@
-<template setup>
-  <div>文章频道页</div>
+<template>
+  <page-container title="文章分类">
+    <template #extra>
+      <el-button type="primary">添加分类</el-button>
+    </template>
+    主体部分是 表格
+  </page-container>
 </template>
+<style lang="scss" scoped></style>
