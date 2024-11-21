@@ -13,4 +13,3 @@ export default pinia
 // export { useCountStore }
 
 export * from './modules/user' // 接收user模块的所有按需导出
-export * from './modules/counter'
