@@ -3,7 +3,7 @@ import { userRegisterService, userLoginService } from '@/api/user'
 import { User, Lock } from '@element-plus/icons-vue'
 import { ref, watch } from 'vue'
 import { useUserStore } from '@/stores'
-import useRouter from 'vue-router'
+import { useRouter } from 'vue-router'
 
 const isRegister = ref(true)
 const form = ref()
