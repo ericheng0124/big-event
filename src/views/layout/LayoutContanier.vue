@@ -12,10 +12,32 @@ import {
 import avatar from '@/assets/default.png'
 import { useUserStore } from '@/stores'
 import { onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+
 const userStore = useUserStore()
 onMounted(() => {
   userStore.getUser()
 })
+
+const router = useRouter()
+
+const handleCommand = async (key) => {
+  if (key === 'logout') {
+    // 退出操作
+    await ElMessageBox.confirm('确认要退出吗？', '温馨提示', {
+      type: 'warning',
+      confirmButtonText: '确认',
+      cancelButtonText: '取消'
+    })
+    // 清除本地信息（token+user)
+    userStore.removeToken()
+    userStore.setUser({})
+    router.push('/login')
+  } else {
+    // 跳转操作
+    router.push(`/user/${key}`)
+  }
+}
 </script>
 
 <template>
@@ -73,11 +95,13 @@ onMounted(() => {
         <div>
           技术大牛程序员：<strong>{{ userStore.user.nickname || userStore.user.username }}</strong>
         </div>
-        <el-dropdown placement="bottom-end">
+        <el-dropdown placement="bottom-end" @command="handleCommand">
+          <!-- 展示给用户，默认看到的 -->
           <span class="el-dropdown__box">
             <el-avatar :src="userStore.user.user_pic || avatar" />
             <el-icon><CaretBottom /></el-icon>
           </span>
+          <!-- 折叠的下拉部分 -->
           <template #dropdown>
             <el-dropdown-menu>
               <el-dropdown-item command="profile" :icon="User">基本资料</el-dropdown-item>
