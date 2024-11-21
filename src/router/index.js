@@ -1,3 +1,4 @@
+import { useUserStore } from '@/stores'
 import { createRouter, createWebHistory } from 'vue-router'
 
 // 创建路由使用 createRouter()
@@ -42,6 +43,19 @@ const router = createRouter({
       ]
     }
   ]
+})
+
+// 登陆访问的拦截 => 默认是直接放行的
+// 根据返回值决定，是放行还是拦截
+// 返回值：
+// 1. 如果是undefined / true 直接放行
+// 2. false 拦回 from 的地址的页面
+// 3. 具体路径 或 路径对象 拦截到对应的地址去
+//      例如： '/login'   {name:'login'}
+router.beforeEach((to) => {
+  // 如果没有token，且访问的是非登录页，拦截到登陆，其他情况正常放行
+  const useToken = useUserStore()
+  if (!useToken.token && to.path !== '/login') return '/login'
 })
 
 export default router
