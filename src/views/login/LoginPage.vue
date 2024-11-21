@@ -1,6 +1,10 @@
 <script setup>
+import { userRegisterService, userLoginService } from '@/api/user'
 import { User, Lock } from '@element-plus/icons-vue'
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
+import { useUserStore } from '@/stores'
+import useRouter from 'vue-router'
+
 const isRegister = ref(true)
 const form = ref()
 
@@ -46,6 +50,34 @@ const rules = {
     }
   ]
 }
+
+const userStore = useUserStore()
+const router = useRouter()
+// 登陆的方法
+const login = async () => {
+  await form.value.validate()
+  const res = await userLoginService(formModel.value)
+  userStore.setToken(res.data.token)
+  ElMessage.success('登录成功')
+  router.push('/')
+}
+
+// 注册方法
+const register = async () => {
+  await form.value.validate()
+  await userRegisterService(formModel.value)
+  ElMessage.success('注册成功')
+  // 切换到登录
+  isRegister.value = false
+}
+
+watch(isRegister, () => {
+  formModel.value = {
+    username: '',
+    password: '',
+    repassword: ''
+  }
+})
 </script>
 
 <template>
