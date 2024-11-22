@@ -29,6 +29,10 @@ const onDelChannel = (row, $index) => {
 const onAddChannel = () => {
   dialog.value.open({})
 }
+
+const onSuccess = () => {
+  getChannelList()
+}
 </script>
 <template>
   <page-container title="文章分类">
@@ -68,7 +72,7 @@ const onAddChannel = () => {
         <el-empty description="没有数据"></el-empty>
       </template>
     </el-table>
-    <ChannelEdit ref="dialog"></ChannelEdit>
+    <ChannelEdit ref="dialog" @success="onSuccess"></ChannelEdit>
   </page-container>
 </template>
 <style lang="scss" scoped></style>
