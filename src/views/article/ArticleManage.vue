@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import { Edit, Delete } from '@element-plus/icons-vue'
+import ChannelSelect from './components/ChannelSelect.vue'
 
 const articleList = ref([
   {
@@ -18,6 +19,14 @@ const articleList = ref([
     cate_name: '体育'
   }
 ])
+
+// 定义请求参数对象
+const params = ref({
+  pagenum: 1,
+  pageSize: 5,
+  cate_id: '',
+  state: ''
+})
 
 // 编辑逻辑
 const onEditAritcle = (row) => {
@@ -37,14 +46,13 @@ const onDelArticle = (row) => {
     <!-- 表单区域 -->
     <el-form inline>
       <el-form-item label="文章分类">
-        <el-select style="width: 200px">
-          <!-- lable 展示给用户看的，value提交给后台看的 -->
-          <el-option lable="新闻" value="110"></el-option>
-          <el-option lable="体育" value="107"></el-option>
-        </el-select>
+        <!-- Vue2 => v-model 是 :value 和 @input 的简写 -->
+        <!-- Vue3 => v-model 是 :modelValue 和 @update:modelValue 的简写 -->
+        <!-- <ChannelSelect v-model:modelValue="params.cate_id"></ChannelSelect> -->
+        <ChannelSelect v-model="params.cate_id"></ChannelSelect>
       </el-form-item>
       <el-form-item label="发布状态">
-        <el-select style="width: 200px">
+        <el-select style="width: 200px" v-model="params.state">
           <el-option lable="已发布" value="已发布"></el-option>
           <el-option lable="草稿" value="草稿"></el-option>
         </el-select>
