@@ -5,7 +5,10 @@ import request from '@/utils/request'
 export const artGetChannelsService = () => request.get('/my/cate/list')
 
 // 删除文章分类
-export const artDelChannelsService = (id) => request.delete('/my/cate/del', id)
+export const artDelChannelsService = (id) =>
+  request.delete('/my/cate/del', {
+    params: { id }
+  })
 
 // 添加文章分类
 export const artAddChannelService = (data) => request.post('/my/cate/add', data)

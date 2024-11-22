@@ -1,8 +1,9 @@
 <script setup>
-import { artGetChannelsService } from '@/api/article'
+import { artDelChannelsService, artGetChannelsService } from '@/api/article'
 import { ref } from 'vue'
 import { Edit, Delete } from '@element-plus/icons-vue'
 import ChannelEdit from './components/ChannelEdit.vue'
+import { ElMessage, ElMessageBox } from 'element-plus'
 
 const channelList = ref([])
 const loading = ref(false) // 用于配置loading效果
@@ -17,13 +18,21 @@ const getChannelList = async () => {
 
 getChannelList()
 
-const onEditChannel = (row, $index) => {
-  console.log(row, $index)
+const onEditChannel = (row) => {
+  // console.log(row, $index)
   dialog.value.open(row)
 }
 
-const onDelChannel = (row, $index) => {
-  console.log(row, $index)
+const onDelChannel = async (row) => {
+  // console.log(row, $index)
+  await ElMessageBox.confirm('确认删除分类吗？', '温馨提示', {
+    type: 'warning',
+    confirmButtonText: '确认',
+    cancelButtonText: '取消'
+  })
+  await artDelChannelsService(row.id)
+  ElMessage.success('删除成功')
+  getChannelList()
 }
 
 const onAddChannel = () => {
