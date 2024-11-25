@@ -2,6 +2,9 @@
 import { ref } from 'vue'
 import ChannelSelect from './ChannelSelect.vue'
 import { Plus } from '@element-plus/icons-vue'
+import { QuillEditor } from '@vueup/vue-quill'
+import '@vueup/vue-quill/dist/vue-quill.snow.css'
+import { artPublishService } from '@/api/article'
 // 控制抽屉弹层的显示和隐藏
 const visibleDrawer = ref(false)
 
@@ -19,13 +22,52 @@ const formModel = ref({
   ...defaultForm
 })
 
+const rules = {
+  title: [
+    { required: true, message: '请输入标题', trigger: 'blur' },
+    {
+      pattern: /^\S{1,10}$/,
+      message: '分类名必须是1-10位非空字符',
+      trigger: 'blur'
+    }
+  ],
+  cate_id: [{ required: true, message: '请选择分类', trigger: 'change' }],
+  cover_img: [{ required: true, message: '请上传封面', trigger: 'change' }],
+  content: [{ required: true, message: '输入内容', trigger: 'blur' }]
+}
+
 // 图片上传相关
 const imgUrl = ref('')
-
-const onSelectFile = (uploadFile) => {
-  // console.log(uploadFile)
-  imgUrl.value = URL.createObjectURL(uploadFile.raw) // 预览图片
+const onUploadFile = (uploadFile) => {
+  imgUrl.value = URL.createObjectURL(uploadFile.raw)
+  formModel.value.cover_img = uploadFile.raw
 }
+
+const emit = defineEmits(['success'])
+
+// 发布方法
+const onPublish = async (state) => {
+  formModel.value.state = state
+  // 请注意当前接口需要的事 formData 对象
+  // 将普通对象 => 转换成 => formData对象
+  const formData = new FormData()
+  for (let key in formModel.value) {
+    formData.append(key, formModel.value[key])
+  }
+  // 发请求
+  if (formModel.value.id) {
+    // 有id表示是编辑
+    console.log('编辑操作')
+  } else {
+    await artPublishService(formData)
+    ElMessage.success('添加成功')
+    visibleDrawer.value = false
+    // 通知父组件添加成功
+    emit('success', 'add')
+  }
+}
+
+const richEditRef = ref()
 
 // 组件对外暴漏一个方法 open ，基于open传来的参数，区分是添加操作还是编辑操作
 // open({}) => 传来的是个空对象，说明是添加操作
@@ -40,6 +82,9 @@ const open = (row) => {
   } else {
     // 没有id表示是添加操作
     formModel.value = { ...defaultForm } // 基于默认的数据，重置form数据
+    // 此处只是重置了表单的数据，但是图片上传img地址和富文本编辑器内容，需要手动重置
+    imgUrl.value = ''
+    richEditRef.value.setHTML('')
     console.log('添加')
   }
   console.log(row)
@@ -68,7 +113,7 @@ defineExpose({
     size="50%"
   >
     <!-- 发表文章表单 -->
-    <el-form :model="formModel" ref="formRef" label-width="100px">
+    <el-form :model="formModel" :rules="rules" ref="formRef" label-width="100px">
       <el-form-item label="文章标题" prop="title">
         <el-input style="width: 90%" v-model="formModel.title" placeholder="请输入标题"></el-input>
       </el-form-item>
@@ -83,20 +128,28 @@ defineExpose({
         -->
         <el-upload
           class="avatar-uploader"
-          :show-file-list="false"
           :auto-upload="false"
-          :on-change="onSelectFile"
+          :show-file-list="false"
+          :on-change="onUploadFile"
         >
           <img v-if="imgUrl" :src="imgUrl" class="avatar" />
           <el-icon v-else class="avatar-uploader-icon"><Plus /></el-icon>
         </el-upload>
       </el-form-item>
       <el-form-item label="文章内容" prop="content">
-        <div class="editor">富文本编辑器</div>
+        <div class="editor">
+          <!-- 富文本编辑器 -->
+          <quill-editor
+            v-model:content="formModel.content"
+            content-type="html"
+            theme="snow"
+            ref="richEditRef"
+          ></quill-editor>
+        </div>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary">发布</el-button>
-        <el-button type="info">草稿</el-button>
+        <el-button type="primary" @click="onPublish('已发布')">发布</el-button>
+        <el-button type="info" @click="onPublish('草稿')">草稿</el-button>
       </el-form-item>
     </el-form>
   </el-drawer>
@@ -128,6 +181,12 @@ defineExpose({
       height: 178px;
       text-align: center;
     }
+  }
+}
+.editor {
+  width: 90%;
+  :deep(.ql-editor) {
+    min-height: 300px;
   }
 }
 </style>

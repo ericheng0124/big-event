@@ -81,6 +81,17 @@ const onReset = () => {
   params.value.state = ''
   getArticleList()
 }
+
+const onSuccess = (type) => {
+  if (type === 'add') {
+    // 如果是添加，最好渲染最后一页
+    const lastPage = Math.ceil((total.value + 1) / params.value.pagesize)
+    // 更新成最大页码数在渲染
+    params.value.pagenum = lastPage
+  }
+  // 如果是编辑，直接渲染当前页
+  getArticleList()
+}
 </script>
 
 <template>
@@ -125,13 +136,8 @@ const onReset = () => {
       <!-- 利用作用域插槽 row 可以获取当前行的数据 => v-for 的 item -->
       <el-table-column label="操作">
         <template #default="{ row }">
-          <el-button
-            circle
-            plain
-            type="primary"
-            :icon="Edit"
-            @click="onEditAritcle(row)"
-          ></el-button>
+          <el-button circle plain type="primary" :icon="Edit" @click="onEditAritcle(row)">
+          </el-button>
           <el-button
             circle
             plain
@@ -174,7 +180,7 @@ const onReset = () => {
     />
 
     <!-- 添加编辑的抽屉 -->
-    <article-edit ref="articleEditRef"></article-edit>
+    <article-edit ref="articleEditRef" @success="onSuccess"></article-edit>
   </page-container>
 </template>
 <style lang="scss" scoped></style>
