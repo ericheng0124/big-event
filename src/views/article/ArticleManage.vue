@@ -56,6 +56,20 @@ const onCurrentChange = (page) => {
   // 基于最新的当前页渲染
   getArticleList()
 }
+
+// 搜索逻辑 => 按照最新的条件，重新检索，从第一页开始展示
+const onSearch = () => {
+  params.value.pagenum = 1 // 重置页码
+  getArticleList()
+}
+
+// 重置逻辑 => 将筛选条件清空，重新检索，从第一页开始展示
+const onReset = () => {
+  params.value.pagenum = 1 // 重置页码
+  params.value.cate_id = ''
+  params.value.state = ''
+  getArticleList()
+}
 </script>
 
 <template>
@@ -78,8 +92,8 @@ const onCurrentChange = (page) => {
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary">搜索</el-button>
-        <el-button>重置</el-button>
+        <el-button @click="onSearch" type="primary">搜索</el-button>
+        <el-button @click="onReset">重置</el-button>
       </el-form-item>
     </el-form>
 
