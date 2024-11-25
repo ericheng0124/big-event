@@ -11,8 +11,8 @@ const total = ref(0) // 总条数
 
 // 定义请求参数对象
 const params = ref({
-  pagenum: 1,
-  pagesize: 5,
+  pagenum: 1, // 单前页
+  pagesize: 5, // 当前生效的每页条数
   cate_id: '',
   state: ''
 })
@@ -33,6 +33,24 @@ const onEditAritcle = (row) => {
 // 删除逻辑
 const onDelArticle = (row) => {
   console.log(row)
+}
+
+const onSizeChange = (size) => {
+  // console.log('当前每页条数', size)
+  // 只要是每页条数变化了，那么原本正在访问的当前页意义不大了，数据已经不在原来那一页了
+  // 这里size变化了，就重新从第一页渲染即可
+  params.value.pagenum = 1
+  params.value.pagesize = size
+  // 基于最新的 单前页 和 每页条数，渲染数据
+  getArticleList()
+}
+
+const onCurrentChange = (page) => {
+  // console.log('页码变化了', page)
+  // 更新当前页
+  params.value.pagenum = page
+  // 基于最新的当前页渲染
+  getArticleList()
 }
 </script>
 
@@ -94,6 +112,31 @@ const onDelArticle = (row) => {
         </template>
       </el-table-column>
     </el-table>
+    <!-- 文章分页 -->
+    <!-- 
+        page-sizes：选项是控制每页多少条，设置此配置必须要包含前面的pagesize条目
+        size：控制大小
+        disabled：是否禁用
+        background：配置背景颜色
+        layout：控制工具栏的 
+            total -> 总条目；
+            sizes -> 控制分页条数；
+            prev -> 上一页箭头；
+            page -> 页码；
+            next -> 下一页箭头；
+            jumper -> 跳转
+    -->
+    <el-pagination
+      v-model:current-page="params.pagenum"
+      v-model:page-size="params.pagesize"
+      :page-sizes="[3, 5, 10]"
+      :background="true"
+      layout="jumper, total, sizes, prev, pager, next"
+      :total="total"
+      @size-change="onSizeChange"
+      @current-change="onCurrentChange"
+      style="margin-top: 20px; justify-content: flex-end"
+    />
   </page-container>
 </template>
 <style lang="scss" scoped></style>
