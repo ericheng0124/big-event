@@ -17,11 +17,15 @@ const params = ref({
   state: ''
 })
 
+const loading = ref(false) // 控制loading 状态
+
 // 基于params参数，获取文章列表
 const getArticleList = async () => {
+  loading.value = true
   const res = await artGetListService(params.value)
   articleList.value = res.data.data
   total.value = res.data.total
+  loading.value = false
 }
 
 getArticleList()
@@ -78,8 +82,9 @@ const onCurrentChange = (page) => {
         <el-button>重置</el-button>
       </el-form-item>
     </el-form>
+
     <!-- 表格区域 -->
-    <el-table :data="articleList">
+    <el-table :data="articleList" v-loading="loading">
       <el-table-column label="文章标题" prop="title">
         <template #default="{ row }">
           <el-link type="primary" :underline="false">{{ row.title }}</el-link>
@@ -112,10 +117,13 @@ const onCurrentChange = (page) => {
         </template>
       </el-table-column>
     </el-table>
+
     <!-- 文章分页 -->
     <!-- 
+        current-page：当前页
+        page-size：每页条数
         page-sizes：选项是控制每页多少条，设置此配置必须要包含前面的pagesize条目
-        size：控制大小
+        size：控制样式大小
         disabled：是否禁用
         background：配置背景颜色
         layout：控制工具栏的 
@@ -125,6 +133,8 @@ const onCurrentChange = (page) => {
             page -> 页码；
             next -> 下一页箭头；
             jumper -> 跳转
+        size-change：控制分页的方法
+        current-change：控制跳转当前页的方法
     -->
     <el-pagination
       v-model:current-page="params.pagenum"
