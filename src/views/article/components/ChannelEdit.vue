@@ -30,11 +30,6 @@ const rules = {
   ]
 }
 
-// 组件对外暴漏一个方法 open ，基于open传来的参数，区分是添加操作还是编辑操作
-// open({}) => 传来的是个空对象，说明是添加操作
-// open({id,cate_name,...}) => 传来的有具体数据，表单需要渲染，说明是编辑操作
-// open调用后，可以打开弹层
-
 const emit = defineEmits(['success'])
 
 const onSubmit = async () => {
@@ -51,9 +46,13 @@ const onSubmit = async () => {
   emit('success')
 }
 
+// 组件对外暴漏一个方法 open ，基于open传来的参数，区分是添加操作还是编辑操作
+// open({}) => 传来的是个空对象，说明是添加操作
+// open({id,cate_name,...}) => 传来的有具体数据，表单需要渲染，说明是编辑操作
+// open调用后，可以打开弹层
 const open = (row) => {
   console.log(row)
-  dialogVisible.value = true
+  dialogVisible.value = true // 显示弹窗
   formModel.value = { ...row } // 添加 -> 重置表单内容，编辑 -> 存储了需要回显的数据
 }
 

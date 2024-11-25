@@ -1,9 +1,10 @@
 <script setup>
 import { ref } from 'vue'
 import { Edit, Delete } from '@element-plus/icons-vue'
-import ChannelSelect from './components/ChannelSelect.vue'
 import { artGetListService } from '@/api/article'
 import { formatTime } from '@/utils/format'
+import ChannelSelect from './components/ChannelSelect.vue'
+import ArticleEdit from './components/ArticleEdit.vue'
 
 const articleList = ref([]) // 文章列表
 
@@ -27,18 +28,27 @@ const getArticleList = async () => {
   total.value = res.data.total
   loading.value = false
 }
-
+// 获取文章列表
 getArticleList()
+
+const articleEditRef = ref()
+
+// 添加逻辑
+const onAddArticle = () => {
+  articleEditRef.value.open({})
+}
 
 // 编辑逻辑
 const onEditAritcle = (row) => {
-  console.log(row)
+  articleEditRef.value.open(row)
 }
+
 // 删除逻辑
 const onDelArticle = (row) => {
   console.log(row)
 }
 
+// 分页条目数变化的方法
 const onSizeChange = (size) => {
   // console.log('当前每页条数', size)
   // 只要是每页条数变化了，那么原本正在访问的当前页意义不大了，数据已经不在原来那一页了
@@ -49,6 +59,7 @@ const onSizeChange = (size) => {
   getArticleList()
 }
 
+// 当前页变化的方法
 const onCurrentChange = (page) => {
   // console.log('页码变化了', page)
   // 更新当前页
@@ -75,7 +86,7 @@ const onReset = () => {
 <template>
   <page-container title="文章管理">
     <template #extra>
-      <el-button type="primary">添加文章</el-button>
+      <el-button type="primary" @click="onAddArticle">添加文章</el-button>
     </template>
     <!-- 表单区域 -->
     <el-form inline>
@@ -83,7 +94,7 @@ const onReset = () => {
         <!-- Vue2 => v-model 是 :value 和 @input 的简写 -->
         <!-- Vue3 => v-model 是 :modelValue 和 @update:modelValue 的简写 -->
         <!-- <ChannelSelect v-model:modelValue="params.cate_id"></ChannelSelect> -->
-        <ChannelSelect v-model="params.cate_id"></ChannelSelect>
+        <ChannelSelect width="200px" v-model="params.cate_id"></ChannelSelect>
       </el-form-item>
       <el-form-item label="发布状态">
         <el-select style="width: 200px" v-model="params.state">
@@ -161,6 +172,9 @@ const onReset = () => {
       @current-change="onCurrentChange"
       style="margin-top: 20px; justify-content: flex-end"
     />
+
+    <!-- 添加编辑的抽屉 -->
+    <article-edit ref="articleEditRef"></article-edit>
   </page-container>
 </template>
 <style lang="scss" scoped></style>
