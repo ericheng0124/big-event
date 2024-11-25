@@ -1,17 +1,17 @@
 import request from '@/utils/request'
 // 文章相关的接口
 
-// 获取文章分类
+// 分类：获取文章分类
 export const artGetChannelsService = () => request.get('/my/cate/list')
 
-// 删除文章分类
-export const artDelChannelsService = (id) =>
-  request.delete('/my/cate/del', {
-    params: { id }
-  })
+// 分类：删除文章分类
+export const artDelChannelsService = (id) => request.delete('/my/cate/del', { params: { id } })
 
-// 添加文章分类
+// 分类：添加文章分类
 export const artAddChannelService = (data) => request.post('/my/cate/add', data)
 
-// 编辑文章分类
+// 分类：编辑文章分类
 export const artEditChannelService = (data) => request.put('/my/cate/info', data)
+
+// 文章：获取文章列表
+export const artGetListService = (params) => request.get('/my/article/list', { params })
